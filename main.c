@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<stdint.h>
 #include<string.h>
 #include "hw1.h"
  int main() 
@@ -26,12 +27,8 @@
 
    reverse_string(string,len);
 
- 
-
    printf("Reverse of entered string is %s\n", string);
-
-  
+   
    return 0;
 }
-
 

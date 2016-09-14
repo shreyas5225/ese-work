@@ -5,6 +5,26 @@ char reverse_string(char *str, int length)
 {
  int k;
  char *begin,*end,temp;
+ 
+
+ if(length==0)
+ {
+   printf("Enter a correct string\n");
+
+  return 1;
+
+ }
+
+
+ if(*str=='\0')
+ {
+   printf("Enter string with characters\n");
+   return 1;
+
+ }
+
+
+
  begin = str;
  end = str;
 
@@ -18,5 +38,5 @@ char reverse_string(char *str, int length)
    begin++;
    end--; 
  }
-
+return * str;
 }
