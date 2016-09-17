@@ -1,3 +1,6 @@
+
+include sources.mk
+
 CC= gcc
 BBB= rm-linux-gnueabihf-gcc
 CFLAGS= -O0 -Wall -g -std=c99
@@ -6,36 +9,35 @@ PROG= main.c hw1.c
 DPFLAG= -Map,-M
 
 .PHONY: all
-all: native Cross_Arm
+all: 
 
 .PHONY: preprocess
-preprocess: 
-	$(CC) $(PROG) -E  file.i
+preprocess:$(PRE) 
+
 
 .PHONY: asm-file
-asm- file : $(ASM)
-	$(CC) $(PROG) -S  file.s
+asm-file : $(ASM)
 
 .PHONY: %.o
 %.o: %.c 
-	$(CC) $(CFLAGS) -c file.o
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.s: %.c
-	$(CC) -S $< -o $@ $(CFLAGSi)
+	$(CC) $(CFLAGS) -S $< -o $@ 
 
-%.asm-file:$(PROG)
-	$(CC) $(PROG) -S $^
+%.asm:%.c 
+	$(CC) $(CFLAGS) -S $< -o $@
 
-%.e: %.c
-	$(CC) -c $< $@ $(CFLAGS)
+%.i: %.c
+	$(CC) $(CFLAGS)  $< $@ 
 
 .PHONY: compile-all
-compile-all: %.o
-	$(CC) $(CFLAGS) -c $(OBJ)
+compile-all: $(OBJ)
+	
 
 .PHONY: build
 build:
-	$(CC) $(CFLAGS) main.c hw1.c
+	$(CC) $(CFLAGS) $(SRC)
 	
 
 .PHONY: upload
@@ -45,3 +47,7 @@ upload:
 .PHONY: clean
 clean: 
 	-rm -rf *.o *.s hw1 hw2 
+
+#.PHONY: build-lib
+#build-lib:
+
