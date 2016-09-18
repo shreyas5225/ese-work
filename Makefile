@@ -9,7 +9,10 @@ PROG= main.c hw1.c
 DPFLAG= -Map,-M
 
 .PHONY: all
-all: 
+all: compile
+
+.PHONY: compile
+compile: $(EXE)
 
 .PHONY: preprocess
 preprocess:$(PRE) 
@@ -33,6 +36,7 @@ asm-file : $(ASM)
 
 %.i: %.c
 	mkdir -p preprocess
+	touch preprocess/$@
 	$(CC) $(CFLAGS) -E  $< preprocess/$@
 	cpp $< >preprocess/$@
 
@@ -59,6 +63,7 @@ clean:
 
 $(EXE) : $(OBJ)
 	$(CC) $(CFLAGS) $(DPFLAG) -o $@ $^
+	
 	size $(EXE)	
 
 .PHONY: build-lib
