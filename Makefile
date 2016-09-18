@@ -4,12 +4,15 @@ include sources.mk
 CC= gcc
 BBB= rm-linux-gnueabihf-gcc
 CFLAGS= -O0 -Wall -g -std=c99
-EXEC= project
-PROG= main.c hw1.c
-DPFLAG= -Map,-M
+EXE= project
+EXEBB= project_B
+#DPFLAG= -
 
 .PHONY: all
 all: compile
+
+.PHONY:build
+build:compile
 
 .PHONY: compile
 compile: $(EXE)
@@ -24,7 +27,7 @@ asm-file : $(ASM)
 .PHONY: %.o
 %.o: %.c 
 	mkdir -p object
-	$(CC) $(CFLAGS) -c $< -O object/$@
+	$(CC) $(CFLAGS) -c $< -o object/$@
 
 %.s: %.c
 	mkdir -p assembly
@@ -43,12 +46,7 @@ asm-file : $(ASM)
 .PHONY: compile-all
 compile-all: $(OBJ)
 	
-
-.PHONY: build
-build:
-	$(CC) $(CFLAGS) $(SRC)
-	
-
+		
 .PHONY: upload
 upload:
 	scp  root@192.168.7.2:/home/debian/bin
@@ -62,8 +60,9 @@ clean:
 	rm -f $(EXE).map
 
 $(EXE) : $(OBJ)
-	$(CC) $(CFLAGS) $(DPFLAG) -o $@ $^
-	
+	$(CC) $(CFLAGS)  -o $@ $^
+	cp -R ./object/* .
+	objdump -s $(EXE)
 	size $(EXE)	
 
 .PHONY: build-lib
