@@ -20,16 +20,21 @@ asm-file : $(ASM)
 
 .PHONY: %.o
 %.o: %.c 
-	$(CC) $(CFLAGS) -c $< -o $@
+	mkdir -p object
+	$(CC) $(CFLAGS) -c $< -O object/$@
 
 %.s: %.c
-	$(CC) $(CFLAGS) -S $< -o $@ 
+	mkdir -p assembly
+	$(CC) $(CFLAGS) -S $< -o assembly/$@ 
 
 %.asm:%.c 
-	$(CC) $(CFLAGS) -S $< -o $@
+	mkdir -p assembly
+	$(CC) $(CFLAGS) -S $< -o assembly/$@
 
 %.i: %.c
-	$(CC) $(CFLAGS)  $< $@ 
+	mkdir -p preprocess
+	$(CC) $(CFLAGS) -E  $< preprocess/$@
+	cpp $< >preprocess/$@
 
 .PHONY: compile-all
 compile-all: $(OBJ)
@@ -46,8 +51,16 @@ upload:
 
 .PHONY: clean
 clean: 
-	-rm -rf *.o *.s hw1 hw2 
+	rm -r object
+	rm -r assembly
+	rm -r preprocess
+	rm -f $(EXE)
+	rm -f $(EXE).map
 
-#.PHONY: build-lib
-#build-lib:
+$(EXE) : $(OBJ)
+	$(CC) $(CFLAGS) $(DPFLAG) -o $@ $^
+	size $(EXE)	
 
+.PHONY: build-lib
+build-lib: 
+	ar rcs libproject1.a $@

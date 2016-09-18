@@ -19,9 +19,11 @@ ASM = 	\
 PRE  = \
 		main.i\
 		#Project.i\
-	    #memory.i                   
+	    #memory.i    
+
+VPATH: memory Project1
 
 vpath %.o object 
 vpath %.h header 
-vpath %.i preprocessed 
+vpath %.i preprocess
 vpath %.s assembly 
