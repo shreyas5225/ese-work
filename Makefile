@@ -3,10 +3,10 @@ include sources.mk
 
 CC= gcc
 BBB= rm-linux-gnueabihf-gcc
-CFLAGS= -O0 -Wall -g -std=c99
+CFLAGS= -O0 -Wall -g -std=c99 -I./Headers
 EXE= project
 EXEBB= project_B
-#DPFLAG= -
+DPFLAG= -Wl,-Map,$@.map
 
 .PHONY: all
 all: compile
@@ -60,11 +60,12 @@ clean:
 	rm -f $(EXE).map
 
 $(EXE) : $(OBJ)
-	$(CC) $(CFLAGS)  -o $@ $^
+	$(CC) $(CFLAGS) $(DPFLAG) -o $@ $^
 	cp -R ./object/* .
 	objdump -s $(EXE)
 	size $(EXE)	
 
 .PHONY: build-lib
-build-lib: 
-	ar rcs libproject1.a $@
+build-lib: main.c hw1.c 
+	ar ru libproject1.a 
+	ranlib libproject1.a

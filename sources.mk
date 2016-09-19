@@ -1,29 +1,29 @@
 OBJ =   \
         main.o\
-       # Project1.o\
-       # memory.o
+       #project_1.o\
+        memory.o
 
 SRC =  \
         main.c\
-		project.c\
+		#projec_1.c\
         memory.c
 
 ASM = 	\
 		main.s\
-		main.asm
-		#Project.s\
-		#memory.s\
-		#Project.asm\
-		#memory.asm
+		#project_1.s\
+		memory.s\
+		main.asm\
+		#project_1.asm\
+		memory.asm
 
 PRE  = \
 		main.i\
-		#Project.i\
-	    #memory.i    
+		#project_1.i\
+	    memory.i    
 
-VPATH: memory Project1
+VPATH: memory Project1 data
 
 vpath %.o object 
-vpath %.h header 
+vpath %.h Headers 
 vpath %.i preprocess
 vpath %.s assembly 
