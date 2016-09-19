@@ -20,13 +20,16 @@ ASM = 	\
 PRE  = \
 	main.i\
     project_1.i\
-    memory.i   
+    memory.i
 
+HEAD = \
+      memory.h\
+	  project_1.h
 
-VPATH: memory project_1 
+VPATH: memory project_1 Headers 
 
-vpath %.o object 
-vpath %.h Headers 
-vpath %.i preprocess
-vpath %.s assembly
-vpath %.asm assembly
+vpath %.o ./object 
+vpath %.h ./Headers 
+vpath %.i ./preprocess
+vpath %.s ./assembly
+vpath %.asm ./assembly

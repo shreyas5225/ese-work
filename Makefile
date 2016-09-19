@@ -4,7 +4,7 @@ include sources.mk
 #different types of flags for different functionalities
 CC= gcc
 BBB= arm-linux-gnueabihf-gcc
-CFLAGS= -O0 -Wall -g -std=c99 
+CFLAGS= -O0 -Wall -g -std=c99 -I./Headers
 EXE= project
 EXEBB= project_B
 DPFLAG= -Wl,-Map,$@.map
@@ -42,7 +42,7 @@ Cross_arm : $(EXEBB)
 %.i: %.c 
 	mkdir -p preprocess
 	touch preprocess/$@
-	$(CC) $(CFLAGS) -E $< -o preprocess/$@
+	$(CC) $(CFLAGS) -E $^ -o preprocess/$@
 	cpp $< >preprocess/$@
 
 %.s: %.c
