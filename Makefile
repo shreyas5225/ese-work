@@ -35,14 +35,12 @@ Cross_arm : $(EXEBB)
 
 #individual files compilation
 .PHONY: %.o
-%.o: %.c 
-	mkdir -p object
-	$(CC) $(CFLAGS) -c $< -o object/$@
+%.o: %.c 	
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.i: %.c 
 	mkdir -p preprocess
 	touch preprocess/$@
-	$(CC) $(CFLAGS) -E $^ -o preprocess/$@
 	cpp $< >preprocess/$@
 
 %.s: %.c
@@ -65,9 +63,13 @@ upload: Cross_arm
 #clean the files
 .PHONY: clean
 clean: 
+	mkdir -p object
+	mkdir -p preprocess
+	mkdir -p assembly
 	rm -r object
 	rm -r assembly
 	rm -r preprocess
+	rm -f $(OBJ)
 	rm -f $(EXE)
 	rm -f $(EXE).map
 	rm -f $(EXEBB)
@@ -76,7 +78,6 @@ clean:
 #executable file for native compiler
 $(EXE) : $(OBJ)
 	$(CC) $(CFLAGS) $(DPFLAG) -o $@ $^
-	cp -R ./object/* .
 	objdump -s $(EXE)
 	size $(EXE)	
 
