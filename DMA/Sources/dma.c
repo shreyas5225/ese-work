@@ -13,8 +13,6 @@
 volatile uint32_t count = 0;
 
 
-
-
 void init_DMA_1Trans(void)
 
 {
@@ -29,24 +27,25 @@ void init_DMA_1Trans(void)
 
 			DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_SOURCE(49);
 
-			DMA_SAR0 = (uint32_t)&g8bSource;
+			DMA_SAR0 = (uint32_t)g8bSource;
 			DMA_DSR_BCR0 |= 0x20u;
 			DMA_DCR0 |= DMA_DCR_SSIZE(1)|DMA_DCR_DSIZE(1);
 
 			DMA_DCR0 |= DMA_DCR_SINC_MASK;
 			DMA_DCR0 |= DMA_DCR_DINC_MASK;
 
-			DMA_DAR0 = (uint32_t)&g8Destiny;
+			DMA_DAR0 = (uint32_t)g8Destiny;
 
 			SIM->SOPT2 |= 0x01000000; /* use MCGFLLCLK as timer counter clock */
 			SIM->SCGC6 |= 0x01000000; /* enable clock to TPM0 */
 			TPM0->SC = 0; /* disable timer while configuring */
 			TPM0->SC = 0x00; /* prescaler /1 */
-			TPM0_MOD = 0x64;
+			TPM0_MOD = 0xFFFF;
 			//TPM0->SC |= 0x80; /* clear TOF */
 			TPM0_SC |= TPM_SC_TOIE_MASK;
 			TPM0->SC |= 0x40; /* enable timeout interrupt */
 			TPM0->SC |= 0x08; /* enable timer */
+
 			NVIC_EnableIRQ(TPM0_IRQn); /* enable IRQ17 (bit 17 of ISER[0]) */
 			NVIC_EnableIRQ(DMA0_IRQn);
 			DMA_DCR0 |= DMA_DCR_START_MASK;
@@ -56,7 +55,6 @@ void init_DMA_1Trans(void)
 
 }
 
-
 void TPM0_IRQHandler()
 {
 	if(TPM0_SC & TPM_SC_TOF_MASK)
@@ -64,4 +62,15 @@ void TPM0_IRQHandler()
 		TPM0_SC |= TPM_SC_TOF_MASK;
 		count++;
 	}
+}
+
+
+void DMA0_IRQHandler()
+{
+	DMA_DSR_BCR0 |= 0x1000000u; //setting the interrupt off
+	NVIC_DisableIRQ(TPM0_IRQn);
+	//Disabling the counter
+	TPM0_SC = 0;
+	TPM0_CONF = 0;
+
 }
