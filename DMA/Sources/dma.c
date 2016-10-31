@@ -7,6 +7,7 @@
 
 #include "dma.h"
 #include "MKL25Z4.h"
+#include "mcg.h"
 
 
 volatile uint32_t count = 0;
