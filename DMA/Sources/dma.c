@@ -8,69 +8,61 @@
 #include "dma.h"
 #include "MKL25Z4.h"
 #include "mcg.h"
+#include "timer.h"
 
 
-volatile uint32_t count = 0;
+//volatile uint32_t count = 0;
+//uint32_t a = 0;
+//uint32_t b =0;
+//uint32_t x = 0;
+//uint32_t y =0;
 
-
+void stop_timer();
 void init_DMA_1Trans(void)
 
 {
 
-	uint32_t a = 0;
-	uint32_t b =0;
-	unsigned char g8bSource[10]= {0,1,2,3,4,5,6,7,8,9};
-	unsigned char g8Destiny[10]= {1,0,0,0,0,0,0,0,0,0};
+	unsigned char g8bSource[500]= "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	unsigned char g8Destiny[500];
 
 			SIM_SCGC6 |= SIM_SCGC6_DMAMUX_MASK;
 			SIM_SCGC7 |= SIM_SCGC7_DMA_MASK;
 
-			DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_SOURCE(49);
-
+			DMAMUX0_CHCFG0 = 0x00;
+			DMA0->DMA[0].DSR_BCR= DMA_DSR_BCR_DONE_MASK;
+			DMA_DSR_BCR0 |= 0x1F4u;
 			DMA_SAR0 = (uint32_t)g8bSource;
-			DMA_DSR_BCR0 |= 0x20u;
+			DMA_DAR0 = (uint32_t)g8Destiny;
+			DMA_DCR0 |= DMA_DCR_EINT_MASK;
+			DMA_DCR0 |= DMA_DCR_AA_MASK;
 			DMA_DCR0 |= DMA_DCR_SSIZE(1)|DMA_DCR_DSIZE(1);
 
 			DMA_DCR0 |= DMA_DCR_SINC_MASK;
 			DMA_DCR0 |= DMA_DCR_DINC_MASK;
 
-			DMA_DAR0 = (uint32_t)g8Destiny;
-
-			SIM->SOPT2 |= 0x01000000; /* use MCGFLLCLK as timer counter clock */
-			SIM->SCGC6 |= 0x01000000; /* enable clock to TPM0 */
-			TPM0->SC = 0; /* disable timer while configuring */
-			TPM0->SC = 0x00; /* prescaler /1 */
-			TPM0_MOD = 0xFFFF;
-			//TPM0->SC |= 0x80; /* clear TOF */
-			TPM0_SC |= TPM_SC_TOIE_MASK;
-			TPM0->SC |= 0x40; /* enable timeout interrupt */
-			TPM0->SC |= 0x08; /* enable timer */
-
-			NVIC_EnableIRQ(TPM0_IRQn); /* enable IRQ17 (bit 17 of ISER[0]) */
+			DMAMUX0_CHCFG0 |= DMAMUX_CHCFG_ENBL_MASK;
+			__enable_irq();
 			NVIC_EnableIRQ(DMA0_IRQn);
+
+			profiler_start();
 			DMA_DCR0 |= DMA_DCR_START_MASK;
+			//DMA_DSR_BCR0 |= 0x1000000u;
 
-			a = count*480 + TPM0_CNT;
-			b=a;
+			//while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
+			//profiler_stop();
+			//x =TPM0_CNT;
+			//y=x;
 
 }
-
-void TPM0_IRQHandler()
-{
-	if(TPM0_SC & TPM_SC_TOF_MASK)
-	{
-		TPM0_SC |= TPM_SC_TOF_MASK;
-		count++;
-	}
-}
-
 
 void DMA0_IRQHandler()
 {
-	DMA_DSR_BCR0 |= 0x1000000u; //setting the interrupt off
-	NVIC_DisableIRQ(TPM0_IRQn);
-	//Disabling the counter
-	TPM0_SC = 0;
-	TPM0_CONF = 0;
+	DMA_DSR_BCR0 |= 0x1000000u;
+	//if(DMA_DSR_BCR_DONE_MASK)
+	profiler_stop();
 
+	//a = count*480 + TPM0_CNT;
+	//b=a;
 }
+
+
