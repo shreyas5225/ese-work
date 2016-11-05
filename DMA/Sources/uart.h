@@ -7,23 +7,11 @@
 
 #ifndef SOURCES_UART_H_
 #define SOURCES_UART_H_
-#define MAX_SIZE 8
-
-struct FRDM_Command_t{
-	Cmds command;
-	uint8_t length;
-	uint8_t data[MAX_DATA_SIZE];
-	uint16_t checksum;
-} FRDM_Cmd;
-
-typedef enum Status{
-	ERROR,
-	SUCCESS,
-};
+//#define MAX_DATA_SIZE 8
 
 typedef enum Cmds_t{
 	LED_CONFIG
-} Cmds ;
+} Cmds;
 
 typedef enum Colors_t{
 	LED_RED,
@@ -31,8 +19,27 @@ typedef enum Colors_t{
 	LED_GREEN
 } Colors;
 
+typedef struct FRDM_Command_t{
+	Cmds command;
+	uint8_t length;
+	Colors data;
+	uint16_t checksum;
+} FRDM_Cmd;
+
+typedef enum Status_t{
+	ERROR,
+	SUCCESS
+}Status;
+
+
+
+
 void UART_init();
-void
+
+void Decode_CI_Msg(FRDM_Cmd *msg);
+
+void Initialize_LED();
+
 
 
 #endif /* SOURCES_UART_H_ */

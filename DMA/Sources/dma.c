@@ -4,7 +4,7 @@
  *  Created on: 26-Oct-2016
  *      Author: Shreyas
  */
-
+/*
 #include "dma.h"
 #include "MKL25Z4.h"
 #include "mcg.h"
@@ -65,4 +65,4 @@ void DMA0_IRQHandler()
 	//b=a;
 }
 
-
+*/
