@@ -8,7 +8,7 @@ void SysTick_Handler(void) {
 }
 
 /* Delay for argument number of systicks */
-__INLINE static void delay (uint32_t dlyTicks) {
+__inline static void delay (uint32_t dlyTicks) {
   uint32_t curTicks;
 
   curTicks = msTicks;
@@ -18,14 +18,25 @@ __INLINE static void delay (uint32_t dlyTicks) {
 
 
 int main (void) {
+
+	volatile uint8_t c;
+	volatile uint8_t rec[1];
 	SystemInit();
-  SystemCoreClockUpdate();                      /* Get Core Clock Frequency */
-  SysTick_Config(SystemCoreClock/1000);         /* Generate interrupt each 1 ms    */
+	SystemCoreClockUpdate();                      /* Get Core Clock Frequency */
+	SysTick_Config(SystemCoreClock/1000);         /* Generate interrupt each 1 ms    */
 
 	SPI_init();
 
-  while(1) {
-		uint8_t data[2] = { 0x01, 0xFC };
-		SPI_write(data, 2, 0x00);
-  }
+	//while (!(SPI_status() & 0x20));
+	//	SPI0->D = 0xFF;
+	//while (!(SPI_status() & 0x80));
+	  //	c = SPI0->D;
+		//uint8_t data[2] = { 0x01, 0xFC };
+	  uint8_t data[0] = {0xFF};
+		//SPI_write(data, 2, 0x00);
+	  SPI_write(data, 1);
+
+	  SPI_write(rec, 1);
+
+	  	return 0;
  }
