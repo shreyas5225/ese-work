@@ -11,11 +11,14 @@
 #include "uart.h"
 
 volatile int count=0;
+volatile int count1=0;
 int Glow = 500;
 FRDM_Cmd new;
 
 int flag=0;
+int flag1=0;
 uint8_t array[10];
+uint8_t array1[15]="Checksum Error";
 
 void UART0_init(void)
 {
@@ -66,15 +69,36 @@ void Initialize_LED()											// initilize LED control operation by setting cl
     TPM0_BASE_PTR->CONTROLS[1].CnSC =  0x20 | 0x4; ;
 }
 
+void Delay()
+{
+	int i,j;
+	for(i=0;i<65555;i++);
+	for(j=0;j<65555;j++);
+}
+
+
 void structure_init (FRDM_Cmd *msg)
 {
-	msg->command= array[0];
-	msg->length= array[1];
-	msg->data= array[2];
-	msg->checksum= array[3];
-	Decode_CI_Msg(msg);
+	msg->command= array[0]-48;
+	msg->length= array[1]-48;
+	msg->data= array[2]-48;
+	msg->checksum= array[3]-48;
+	if(((msg->command)+(msg->length)+(msg->data))!=msg->checksum)
+	{
+			flag1=1;
+			count1=0;
+			count=0;
+			UART_C2_REG(UART0_BASE_PTR) |= (UART_C2_TE_MASK );
+			UART_C2_REG(UART0_BASE_PTR) |= UART_C2_TIE_MASK;
+
+
+		}
+	else
+	{
+	Decode_CI_Msg(&msg);
 	count= 0;
 	UART_C2_REG(UART0_BASE_PTR) |= UART_C2_RIE_MASK;
+	}
 
 }
 
@@ -105,7 +129,7 @@ void Set_green_LED()
 
 void Decode_CI_Msg(FRDM_Cmd *msg)
 {
-	switch((msg->data)-48)
+	switch((msg->data))
 		{
 		case LED_RED: Set_red_LED();
 			break;
@@ -123,9 +147,12 @@ void UART0_IRQHandler()
 	__disable_irq();
 
 	char receive;
+	uint8_t state;
+	state= UART0->S1;
 
-	receive= UART0->D;
-
+	if(state & UART_S1_RDRF_MASK)
+	{
+		receive= UART0->D;
 	if(receive!='\r')
 	{
 		*(array+count)= receive;
@@ -136,7 +163,24 @@ void UART0_IRQHandler()
 	{
 		UART0_C2_REG(UART0_BASE_PTR) &= ~(UART_C2_RIE_MASK);
 		flag= 1;
+		receive = UART0->D;
 	}
+  }
+
+	if((state & UART_S1_TDRE_MASK) && (flag1==1))
+		{
+			if((*(array1+counter1))!='\0')
+			{
+				UART0->D = *(array1 + counter1);
+				count1++;
+			}
+			else
+			{
+				UART_C2_REG(UART0_BASE_PTR) &= ~(UART_C2_TE_MASK);
+				UART_C2_REG(UART0_BASE_PTR) &= ~(UART_C2_TIE_MASK);
+				flag1=0;
+			}
+		}
 
 	__enable_irq();
 }
