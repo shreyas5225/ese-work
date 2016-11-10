@@ -28,6 +28,7 @@ void  my_memmove(uint8_t *source,uint8_t *destination,uint32_t length)
 
 }
 
+#if MEMZERO
 void my_memzero(uint8_t *src, uint32_t length)
  {
          uint8_t *s; /* take pointer */re
@@ -41,3 +42,4 @@ void my_memzero(uint8_t *src, uint32_t length)
                  s++;
          }
  }
+#endif

@@ -4,6 +4,7 @@
  *  Created on: 03-Nov-2016
  *      Author: Shreyas
  */
+/*
 #include "MKL25Z4.h"
 #include<stdio.h>
 #include <math.h>
@@ -200,3 +201,4 @@ int main()
 	}
 	return 0;
 }
+*/
