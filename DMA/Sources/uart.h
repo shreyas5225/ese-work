@@ -9,6 +9,8 @@
 #define SOURCES_UART_H_
 //#define MAX_DATA_SIZE 8
 
+void UART0_init(void);
+
 typedef enum Cmds_t{
 	LED_CONFIG
 } Cmds;
@@ -31,15 +33,10 @@ typedef enum Status_t{
 	SUCCESS
 }Status;
 
+#endif
 
 
 
-void UART_init();
 
-void Decode_CI_Msg(FRDM_Cmd *msg);
 
-void Initialize_LED();
 
-void print_character(int c);
-
-#endif /* SOURCES_UART_H_ */

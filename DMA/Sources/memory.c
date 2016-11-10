@@ -28,18 +28,4 @@ void  my_memmove(uint8_t *source,uint8_t *destination,uint32_t length)
 
 }
 
-#if MEMZERO
-void my_memzero(uint8_t *src, uint32_t length)
- {
-         uint8_t *s; /* take pointer */re
-         uint8_t zero=0; /* take zero value to put */
-         s=src;
-         uint8_t *end=s+length;	/* assign the end of the memory location */
 
-         while(s!=end)	/* input value zero at the memory location */
-         {
-                 *s=zero;
-                 s++;
-         }
- }
-#endif
