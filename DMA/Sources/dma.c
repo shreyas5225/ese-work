@@ -55,17 +55,7 @@ void init_DMA_1Trans(uint8_t *arr1,uint8_t *arr2,uint32_t length)
 
 }
 
-/*void DMA0_IRQHandler()
-{
-	DMA_DSR_BCR0 |= 0x1000000u;
-	//if(DMA_DSR_BCR_DONE_MASK)
-	profiler_stop();
 
-	//a = count*480 + TPM0_CNT;
-	//b=a;
-}
-
-*/
 int main()
 {
 
