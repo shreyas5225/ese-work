@@ -6,6 +6,8 @@
  */
 
 #include "MKL25Z4.h"
+#include "timer.h"
+#include "uart.h"
 
 volatile uint32_t count = 0;
 uint32_t a = 0;

@@ -11,6 +11,7 @@
 #include "memory.h"
 #include "mcg.h"
 #include "timer.h"
+#include "uart.h"
 #define LENGTH 500
 
 
@@ -21,7 +22,7 @@ uint8_t *d;
 s= g8bSource;
 d= g8bDestiny;
 
-void init_DMA_1Trans(uint8_t *arr1,uint8_t *arr2,uint32_t length)
+void init_DMA_1Trans(uint8_t *arr1,uint8_t *arr2,uint32_t length)   // DMA initialization function
 
 {
 
@@ -48,11 +49,6 @@ void init_DMA_1Trans(uint8_t *arr1,uint8_t *arr2,uint32_t length)
 			DMA_DCR0 |= DMA_DCR_START_MASK;
 			//DMA_DSR_BCR0 |= 0x1000000u;
 
-			//while(!(DMA_DSR_BCR0 & DMA_DSR_BCR_DONE_MASK));
-			//profiler_stop();
-			//x =TPM0_CNT;
-			//y=x;
-
 }
 
 
@@ -60,6 +56,7 @@ int main()
 {
 
 	__disable_irq();
+	UART0_init();
 	init_DMA_1Trans(s,d,LENGTH);
 
 	return 0;
