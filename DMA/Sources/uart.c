@@ -4,7 +4,7 @@
  *  Created on: 03-Nov-2016
  *      Author: Shreyas
  */
-/*
+
 #include "MKL25Z4.h"
 #include<stdio.h>
 #include <math.h>
@@ -21,7 +21,7 @@ int flag1=0;
 uint8_t array[10];
 uint8_t array1[15]="Checksum Error";
 
-void UART0_init(void)
+void UART0_init(void)   //initialization function for UART
 {
 
 	__disable_irq();
@@ -49,13 +49,13 @@ void UART0_init(void)
 
 }
 
-void Initialize_LED()											// initilize LED control operation by setting clock source
+void Initialize_LED()					//initialization function for LED
 {
-    SIM_BASE_PTR->SCGC6 |= SIM_SCGC6_TPM2_MASK;					// check for LED clock source
+    SIM_BASE_PTR->SCGC6 |= SIM_SCGC6_TPM2_MASK;
 	SIM_BASE_PTR->SCGC6 |= SIM_SCGC6_TPM0_MASK;
     SIM_BASE_PTR->SOPT2 |= SIM_SOPT2_TPMSRC(1);
 
-    TPM2_BASE_PTR->SC = TPM_SC_CMOD(1) | TPM_SC_PS(7);  // make use of TPM2 for red and green and TPM0 for blue
+    TPM2_BASE_PTR->SC = TPM_SC_CMOD(1) | TPM_SC_PS(7);
     TPM2_BASE_PTR->MOD = 1875;
     TPM0_BASE_PTR->SC = TPM_SC_CMOD(1) | TPM_SC_PS(7);
     TPM0_BASE_PTR->MOD = 1875;
@@ -70,15 +70,8 @@ void Initialize_LED()											// initilize LED control operation by setting cl
     TPM0_BASE_PTR->CONTROLS[1].CnSC =  0x20 | 0x4; ;
 }
 
-void Delay()
-{
-	int i,j;
-	for(i=0;i<65555;i++);
-	for(j=0;j<65555;j++);
-}
 
-
-void structure_init (FRDM_Cmd *msg)
+void structure_init (FRDM_Cmd *msg)     // initialization function for structure
 {
 	msg->command= array[0]-48;
 	msg->length= array[1]-48;
@@ -104,7 +97,7 @@ void structure_init (FRDM_Cmd *msg)
 }
 
 
-void Set_red_LED()
+void Set_red_LED()                              // red colour
 {
 	 	    TPM2_BASE_PTR->CONTROLS[1].CnV = 0;
 	 	    TPM0_BASE_PTR->CONTROLS[1].CnV = 0;
@@ -112,7 +105,7 @@ void Set_red_LED()
 }
 
 
-void Set_blue_LED()
+void Set_blue_LED()                             //blue colour
 {
 
 			TPM2_BASE_PTR->CONTROLS[1].CnV = 0;
@@ -121,14 +114,14 @@ void Set_blue_LED()
 
 }
 
-void Set_green_LED()
+void Set_green_LED()							//green colour
 {
 				TPM2_BASE_PTR->CONTROLS[1].CnV = Glow;
 			 	TPM2_BASE_PTR->CONTROLS[0].CnV = 0;
 			 	TPM0_BASE_PTR->CONTROLS[1].CnV = 0;
 }
 
-void Decode_CI_Msg(FRDM_Cmd *msg)
+void Decode_CI_Msg(FRDM_Cmd *msg)                // decode message
 {
 	switch((msg->data))
 		{
@@ -138,12 +131,11 @@ void Decode_CI_Msg(FRDM_Cmd *msg)
 			break;
 		case LED_GREEN:Set_green_LED();
 			break;
-		//case LED_DANCE:Set_LED_config();
-			//break;
+
 		}
 }
 
-void UART0_IRQHandler()
+void UART0_IRQHandler()					// UART IRQ handler
 {
 	__disable_irq();
 
@@ -201,4 +193,4 @@ int main()
 	}
 	return 0;
 }
-*/
+
