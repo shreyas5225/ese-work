@@ -13,7 +13,7 @@ volatile uint32_t count = 0;
 uint32_t a = 0;
 uint32_t b =0;
 
-void profiler_start()
+void profiler_start()   // profiler start function
 {
 				SIM->SOPT2 |= 0x01000000; /* use MCGFLLCLK as timer counter clock */
 				SIM->SCGC6 |= 0x01000000; /* enable clock to TPM0 */
@@ -33,7 +33,7 @@ void profiler_start()
 }
 
 
-void profiler_stop()
+void profiler_stop()   // profiler stop function
 {
 	NVIC_DisableIRQ(TPM0_IRQn);
 	//Disable the counter
@@ -43,7 +43,7 @@ void profiler_stop()
 	b=a;
 }
 
-void TPM0_IRQHandler()
+void TPM0_IRQHandler()      // TPM IRQHandler
 {
 	if(TPM0_SC & TPM_SC_TOF_MASK)
 	{
