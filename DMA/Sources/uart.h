@@ -40,6 +40,6 @@ void Decode_CI_Msg(FRDM_Cmd *msg);
 
 void Initialize_LED();
 
-
+void print_character(int c);
 
 #endif /* SOURCES_UART_H_ */

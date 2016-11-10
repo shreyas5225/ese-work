@@ -21,6 +21,14 @@ int flag1=0;
 uint8_t array[10];
 uint8_t array1[15]="Checksum Error";
 
+void print_character(int c)
+	{
+		while(!(UART0->S1 & UART_S1_TDRE_MASK));
+		 UART0->D = c;
+
+	}
+
+
 void UART0_init(void)   //initialization function for UART
 {
 
