@@ -111,14 +111,30 @@ void putstr1 (char *s)
 	//return i+1;
 }
 
+int size_cal()
+{
+    char *size1;
+    unsigned int i,result=0;
+    i=0;
+    size1= getstr();
+	putstr1(size1);
+	while(*(size1+i)!='\0')
+    {
+      result = (result * 10) + ( *(size1+i)- '0' );
+      i++;
+    }
+    printf("\nnum value is %d",result);
+    return result;
+}
+
 void main()
 {
-	 unsigned int i,result=0;
+	 unsigned int res=0,k=0,l=0;
      xdata char * buffer[50];
-    unsigned int zz=1;
-    unsigned int i=2;
+    unsigned char zz=0;
+    unsigned int pp=0;
+    unsigned int ff=0;
 
-	char *size1;
 
     init_dynamic_memory((MEMHEADER xdata *)heap, HEAP_SIZE);
 
@@ -126,29 +142,27 @@ void main()
 	printf("Enter the buffer size between 32 and 2400\n\r");
 //	printf_small("Enter the buffer size between 32 and 2400 bytes");
 
-	size1= getstr();
-	putstr1(size1);
+	res=size_cal();
 //	zz = 1;
-	i=0;
-	while(*(size1+i)!='\0')
-    {
-      result = (result * 10) + ( *(size1+i)- '0' );
-      i++;
-    }
-		//r=126;
-    printf("\nnum value is %d",result);
-
-    if (result>2400||result<32||result%8!=0)
-    {
+        do
+        {
+         if (res>2400||res<32||res%8!=0)
+         {
         printf_tiny("Enter a valid input\n");
-        
-    }
+        res=size_cal();
+         }
+         else
+         {
+             break;
+         }
+        }while (res>2400||res<32||res%8!=0);
 
     do{
-        if((buffer[0]=malloc((unsigned int)(zz*0x100)))==0)
+
+        if((buffer[0]=malloc((unsigned int)(res)))==0)
         printf_tiny("malloc buffer0 failed\n\r");
 
-        if((buffer[1]=malloc((unsigned int)(zz*0x100)))==0)
+        if((buffer[1]=malloc((unsigned int)(res)))==0)
         {
           printf_tiny("malloc buffer1 failed\n\r");
           free(buffer[0]);
@@ -156,6 +170,56 @@ void main()
     } while((buffer[0]==0)||(buffer[1]==0));
 
     printf_tiny("Allocation Successful\n\r");
+
+
+  do{
+    printf_tiny("Enter Characters\n\r");
+
+    zz=getchar();
+    putchar(zz);
+    switch(zz)
+    {
+     case '+':
+     printf_tiny("Enter a buffer size between 20 and 400\n\r");
+     pp= size_cal();
+
+     do
+     {
+     if(pp>400||pp<20)
+      {
+          printf_tiny("Ender a valid input\n");
+          pp= size_cal();
+      }
+     }while(pp>400||pp<20);
+
+     if((buffer[k+2]=malloc((unsigned int)(pp)))==0)
+     {
+         printf_tiny("Malloc allocation failed for buffer[%d]",k+2);
+     }
+       printf_tiny("Malloc allocation successful for buffer[%d]",k+2);
+       k++;
+       break;
+     case '-':
+        printf_tiny("Enter a buffer number to be freed\n");
+        ff=size_cal();
+        do
+        {  if((ff==0)||(ff>k+1))
+          {
+         printf_tiny("Enter a number other than 0\n");
+         ff=size_cal();
+          }
+         else
+         {
+           free(buffer[ff]);
+           printf_tiny("Buffer[%d] freed successfully\n",ff);
+           
+           break;
+         }
+        } while ((ff==0)||(ff>k+1));
+    }
+  } while ((zz=='+')||(zz=='-')||(zz=='?')||(zz=='@')||(zz=='='));
+
+
 }
 
 
