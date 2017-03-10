@@ -123,7 +123,7 @@ int size_cal()
       result = (result * 10) + ( *(size1+i)- '0' );
       i++;
     }
-    printf("num value is %d\n\r",result);
+    //printf("num value is %d\n\r",result);
     return result;
 }
 
@@ -145,6 +145,7 @@ void main()
 	 unsigned int res=0,k=2,l=0,y=0,w=0;
 	 unsigned int m=0;
 	 unsigned int u=2;
+	 unsigned int t=0,g=0;
      xdata unsigned char * buffer[125];
     unsigned char zz=0;
     unsigned int pp[125];
@@ -159,7 +160,7 @@ void main()
 
     sec1:
      do{
-	printf("Enter the buffer size between 32 and 2400\n\r");
+	printf("Enter a buffer size between 32 and 2400 and divisible by 8\n\r");
 //	printf_small("Enter the buffer size between 32 and 2400 bytes");
 
 	res=size_cal();
@@ -189,7 +190,7 @@ void main()
         }
     } while((buffer[0]==0)||(buffer[1]==0));
 
-    printf_tiny("Allocation Successful\n\r");
+    printf_tiny("\n\rAllocation Successful\n\r");
     pp[0]=res;
     pp[1]=res;
     //ss[0]=res;
@@ -199,15 +200,26 @@ void main()
     //printf_tiny ("Size is %d",pp[0]);
     //printf_tiny ("Size is %d",pp[1]);
 
-  do{
-    printf_tiny("\n\rEnter Characters:Storage or Command Characters\n\r");
+  while(1){
+    printf_tiny("\n\rEnter lowercase or number characters to add to buffer\n\r");
+    /*printf_tiny("\n\r + to add buffer\n\r");
+    printf_tiny("\n\r - to delete buffer\n\r");
+    printf_tiny("\n\r ? for buffer report\n\r");
+    printf_tiny("\n\r @ to free the heap\n\r");
+    printf_tiny("\n\r = for hex dump\n\r");*/
     zz=getchar();
     putchar(zz);
     if((zz>='0'&& zz<= '9')||(zz>='a'&& zz<= 'z'))
     {
+        if(w<res)
+        {
         *(buffer[0]+w)=zz;
           w++;
-
+        }
+         else
+         {
+            ;
+         }
         //printf("element is");
         //putstr1((buffer[0]+w));
        //num_items ++;
@@ -221,27 +233,28 @@ void main()
         printf("\n");
 
      //cmd_cnt++;
-     printf_tiny("Enter a buffer size between 20 and 400\n\r");
+     printf_tiny("\rEnter a buffer size between 20 and 400\n\r");
      pp[u]= size_cal();
 
      do
      {
      if(pp[u]>400||pp[u]<20)
       {
-          printf_tiny("Ender a valid input\n\r");
+          printf_tiny("\rEnter a valid input\n\r");
           pp[u]= size_cal();
       }
      }while(pp[u]>400||pp[u]<20);
 
-        printf_tiny("Value of k is %d",k);
+        //printf_tiny("Value of k is %d",k);
      if((buffer[k]= malloc((unsigned int)pp[u]))==0)
      {
-         printf_tiny("Malloc allocation failed for buffer[%d]\n\r",k);
+         printf_tiny("\n\rMalloc allocation failed for buffer[%d]\n\r",k);
      }
-       printf_tiny("Malloc allocation successful for buffer[%d]\n\r",k);
+       printf_tiny("\n\rMalloc allocation successful for buffer[%d]\n\r",k);
        temp[k]=(int)buffer[k];
-       printf_tiny("Start address of new buffer created is %d\n\r",temp[k]);
-       for(y=0;y<=k;y++)
+       //printf_tiny("Start address of new buffer created is %d\n\r",temp[k]);
+
+       /*for(y=0;y<=k;y++)
        {
          printf_tiny("%d\t",temp[y]);
        }
@@ -250,6 +263,7 @@ void main()
        {
            printf_tiny("%d\t",pp[y]);
        }
+       */
        //ss[u+2]=pp[u+2];
        k++;
        u++;
@@ -257,7 +271,7 @@ void main()
      case '-':
          printf("\n");
         //cmd_cnt++;
-        printf_tiny("Enter a buffer number to be freed\n\r");
+        printf_tiny("\rEnter a buffer number to be freed\n\r");
         ff=size_cal();
         do
         {  if((ff==0)||(ff>k))
@@ -279,7 +293,7 @@ void main()
            k--;
            u--;
            printf_tiny("Buffer[%d] freed successfully\n\r",ff);
-           printf_tiny("Value of k is %d",k);
+           //printf_tiny("Value of k is %d",k);
            break;
          }
         } while ((ff==0)||(ff>k));
@@ -316,11 +330,16 @@ void main()
         printf_tiny("Number of total characters since last entry of ?:%d\n\r",cmd_first-cmd_last);
         stg_last=w;
         cmd_last++;
-        printf_tiny("Buffer0 contents are as follows\n");
+        printf_tiny("Buffer0 contents are as follows and now it is being emptied\n\r");
         for(y=0;y<w;y++)
         {
           putchar(*(buffer[0]+y));
-          printf("\n\r");
+          printf(" ");
+          l=y;
+          if((l!=0)&&(l%31==0))
+          {
+              printf_tiny("\n\r");
+          }
         }
         for(y=0;y<w;y++)
         {
@@ -328,13 +347,19 @@ void main()
         }
         break;
      case '=':
-         printf("\n");
+         printf("\n\r");
+         printf("%04x:",temp[g]);
         //cmd_cnt++;
-        printf_tiny("%d:",temp[0]);
         for(y=0;y<w;y++)
         {
-          putchar(*(buffer[0]+y));
+          //putchar(*(buffer[0]+y)-0x30);
+          printf_tiny("%x ",(*(buffer[0]+y)));
           printf(" ");
+          if((y+1)%16==0)
+          {
+            printf("\n\r");
+            printf("%04x:",temp[g]+16);
+          }
         }
         break;
      case '@':
@@ -354,7 +379,7 @@ void main()
     //break1:goto break2;
   }
      // break2: goto break3;
-  } while ((zz=='+')||(zz=='-')||(zz=='?')||(zz=='@')||(zz=='=')||(zz>='0'&& zz<= '9')||(zz>='a'&& zz<= 'z'));
+  } //while ((zz=='+')||(zz=='-')||(zz=='?')||(zz=='@')||(zz=='=')||(zz>='0'&& zz<= '9')||(zz>='a'&& zz<= 'z'));
   //break3: goto sec1;
 }
 
