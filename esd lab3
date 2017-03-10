@@ -142,9 +142,9 @@ void buff_shift(char array[],unsigned int r,unsigned int t)
 
 void main()
 {
-	 unsigned int res=0,k=0,l=0,y=0,w=0;
+	 unsigned int res=0,k=2,l=0,y=0,w=0;
 	 unsigned int m=0;
-	 unsigned int u=0;
+	 unsigned int u=2;
      xdata unsigned char * buffer[125];
     unsigned char zz=0;
     unsigned int pp[125];
@@ -219,26 +219,37 @@ void main()
     {
      case '+':
         printf("\n");
+
      //cmd_cnt++;
      printf_tiny("Enter a buffer size between 20 and 400\n\r");
-     pp[u+2]= size_cal();
+     pp[u]= size_cal();
 
      do
      {
-     if(pp[u+2]>400||pp[u+2]<20)
+     if(pp[u]>400||pp[u]<20)
       {
           printf_tiny("Ender a valid input\n\r");
-          pp[u+2]= size_cal();
+          pp[u]= size_cal();
       }
-     }while(pp[u+2]>400||pp[u+2]<20);
+     }while(pp[u]>400||pp[u]<20);
 
-
-     if((buffer[k+2]= malloc((unsigned int)pp[u+2]))==0)
+        printf_tiny("Value of k is %d",k);
+     if((buffer[k]= malloc((unsigned int)pp[u]))==0)
      {
-         printf_tiny("Malloc allocation failed for buffer[%d]\n\r",k+2);
+         printf_tiny("Malloc allocation failed for buffer[%d]\n\r",k);
      }
-       printf_tiny("Malloc allocation successful for buffer[%d]\n\r",k+2);
-       temp[u+2]=(int)buffer[u+2];
+       printf_tiny("Malloc allocation successful for buffer[%d]\n\r",k);
+       temp[k]=(int)buffer[k];
+       printf_tiny("Start address of new buffer created is %d\n\r",temp[k]);
+       for(y=0;y<=k;y++)
+       {
+         printf_tiny("%d\t",temp[y]);
+       }
+       printf_tiny("\n");
+       for(y=0;y<=k;y++)
+       {
+           printf_tiny("%d\t",pp[y]);
+       }
        //ss[u+2]=pp[u+2];
        k++;
        u++;
@@ -249,7 +260,7 @@ void main()
         printf_tiny("Enter a buffer number to be freed\n\r");
         ff=size_cal();
         do
-        {  if((ff==0)||(ff>k+1))
+        {  if((ff==0)||(ff>k))
           {
          printf_tiny("Enter a number other than 0 and a valid buffer number\n\r");
          ff=size_cal();
@@ -259,41 +270,46 @@ void main()
            free(buffer[ff]);
            buffer[ff]=NULL;
            //printf_tiny("temp address is %d",buffer[ff]);
-           for(m=ff;m<k+1;m++)
+           for(m=ff;m<k;m++)
            {
                buffer[m]=buffer[m+1];
                temp[m]=temp[m+1];
                 pp[m]=pp[m+1];
            }
-           
            k--;
+           u--;
            printf_tiny("Buffer[%d] freed successfully\n\r",ff);
+           printf_tiny("Value of k is %d",k);
            break;
          }
-        } while ((ff==0)||(ff>k+1));
+        } while ((ff==0)||(ff>k));
         break;
      case '?':
          printf("\n");
         //cmd_cnt++;
         stg_first=w;
-        printf_tiny("Total number of buffers in the heap are %d\n\r",k+2);
+        printf_tiny("Total number of buffers in the heap are %d\n\r",k);
         printf_tiny("Information about each buffer in the heap is as follows\n\r");
-        for(y=0;y<k+2;y++)
+        printf_tiny("Buffer Number\t\tBuffer Start Address\t\tBuffer End Address\t\tBuffer Size\n\r");
+        for(y=0;y<k;y++)
         {
-          printf_tiny("buffer number : %d\n\r",y);
+          printf_tiny("   %d\t\t\t\t%d\t\t\t\t%d\t\t\t    %d\n\r",y,temp[y],(temp[y]+pp[y]),pp[y]);
         }
-        for(y=0;y<k+2;y++)
+        //printf_tiny("")
+        /*
+        for(y=0;y<k;y++)
         {
         printf_tiny("Buffer Start Address:%d\n\r",temp[y]);
         }
-        for(y=0;y<k+2;y++)
+        for(y=0;y<k;y++)
         {
           printf_tiny("Buffer end address:%d\n\r",temp[y]+pp[y]);
         }
-        for(y=0;y<k+2;y++)
+        for(y=0;y<k;y++)
         {
           printf_tiny("Buffer Sizes:%d\n\r",pp[y]);
         }
+         */
         printf_tiny("Number of Storage Characters:%d\n\r",cmd_first);
         printf_tiny("Number of free spaces in the buffer:%d\n\r",res-w);
         printf_tiny("Number of Storage characters since last entry of ?:%d\n\r",stg_first-stg_last);
@@ -306,8 +322,10 @@ void main()
           putchar(*(buffer[0]+y));
           printf("\n\r");
         }
-        free(buffer[0]);
-        buffer[0]=NULL;
+        for(y=0;y<w;y++)
+        {
+            *(buffer[0]+y)='\0';
+        }
         break;
      case '=':
          printf("\n");
@@ -322,16 +340,20 @@ void main()
      case '@':
         printf("\n");
         printf_tiny("All buffers are being freed\n\r");
-        for(y=0;y<k+2;y++)
+        for(y=0;y<k;y++)
         {
             free(buffer[y]);
             buffer[y]=NULL;
         }
          goto sec1;
+         break;
+         default:
+        printf_tiny("\n\rInvalid Input");
+        break;
     }
     //break1:goto break2;
   }
-   // break2: goto break3;
+     // break2: goto break3;
   } while ((zz=='+')||(zz=='-')||(zz=='?')||(zz=='@')||(zz=='=')||(zz>='0'&& zz<= '9')||(zz>='a'&& zz<= 'z'));
   //break3: goto sec1;
 }
