@@ -7,7 +7,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define DEBUG
+#ifdef DEBUG
+#define DEBUGPORT(x) dataout(x);
+#else
+#define DEBUGPORT(x)
+#endif // DEBUG
 
+
+void dataout(int x);
 void putstr1 (char *s);
 
 volatile int gg;  // global
@@ -22,27 +30,9 @@ char getchar ();
 void putchar (char c);
 char data_get[50];
 
+xdata int *db;
 
-// compiler flags
-// -c -mmcs51 --std-sdcc99 --verbose --model-large
-
-// linker flags for C501 with code in SRAM at 0x6000 and data in SRAM at 0xC000
-// --code-loc 0x6000 --code-size 0x6000 --xram-loc 0xC000 --xram-size 0x0400 --model-large --out-fmt-ihx
-
-// linker flags for AT89C51RC2 with code in Flash at 0x0000 and data in internal XRAM at 0x0000
-// --code-loc 0x0000 --code-size 0x8000 --xram-loc 0x0000 --xram-size 0x400 --model-large --out-fmt-ihx
-
-// linker flags for AT89C51RC2 with code in Flash at 0x0000 and data in internal/external XRAM at 0x0000
-// --code-loc 0x0000 --code-size 0x8000 --xram-loc 0x0000 --xram-size 0x8400 --model-large --out-fmt-ihx
-
-// All processor XRAM should be enabled before the call to main().
-// This can be done in a user supplied _sdcc_external_startup() function.
-// See section 3.11.1 of sdccman.pdf for SDCC revision 2.6.0.
-
-
-
-
-_sdcc_external_startup()
+_sdcc_external_startup()  //external setup files for initialization
 {
     AUXR |= 0x0C;
     TMOD=0x20; //use Timer 1, mode 2
@@ -53,7 +43,14 @@ _sdcc_external_startup()
     return 0;
 }
 
-char getchar ()
+void dataout(int x)  //debugport function
+{
+    db=0xFFFF;
+    *db=x;
+    printf_tiny("Executed\n\r");
+}
+
+char getchar ()  //get input from user
 {
 //	char cc;
 //    while (!RI);                // compare asm code generated for these three lines
@@ -63,7 +60,7 @@ char getchar ()
 	return SBUF;  	// return character from SBUF
 }
 
-void putchar (char c)
+void putchar (char c)     // transmit character from user
 {
 //	while (!TI);				// compare asm code generated for these three lines
 	while (TI == 0);
@@ -72,7 +69,7 @@ void putchar (char c)
 	TI = 0;  	// clear TI flag
 }
 
-char * getstr()
+char * getstr()   //get string of inputs from user
 {
 	char *s=0;
 	char c;
@@ -97,7 +94,7 @@ char * getstr()
 	return s;
 }
 
-void putstr1 (char *s)
+void putstr1 (char *s)  //print string of inputs from user
 {
 	int i = 0;
 	while (*(s+i)!='\0')
@@ -111,7 +108,7 @@ void putstr1 (char *s)
 	//return i+1;
 }
 
-int size_cal()
+int size_cal()     //function for size calculation
 {
     char *size1;
     unsigned int i,result=0;
@@ -142,34 +139,35 @@ void buff_shift(char array[],unsigned int r,unsigned int t)
 
 void main()
 {
-	 unsigned int res=0,k=2,l=0,y=0,w=0;
+	 unsigned int res=0,k=2,l=0,y=0,w=0;  // initialize variables
 	 unsigned int m=0;
+	 unsigned int v=1;
 	 unsigned int u=2;
 	 unsigned int t=0,g=0;
-     xdata unsigned char * buffer[125];
+     xdata unsigned char * buffer[125];  // initialize array of pointers
     unsigned char zz=0;
     unsigned int pp[125];
    // unsigned int ss[125];
     unsigned int ff=0;
         int temp[125];
-    unsigned int num_items=0;
+    unsigned int num_items=0;   //variables for commmand and storage characters
     int cmd_first=0,cmd_last=0;
     int stg_first=0,stg_last=0;
 
-    init_dynamic_memory((MEMHEADER xdata *)heap, HEAP_SIZE);
+    init_dynamic_memory((MEMHEADER xdata *)heap, HEAP_SIZE); // dynamic memory initialization
 
     sec1:
-     do{
+     do{  // input buffer sizes
 	printf("Enter a buffer size between 32 and 2400 and divisible by 8\n\r");
 //	printf_small("Enter the buffer size between 32 and 2400 bytes");
 
 	res=size_cal();
 //	zz = 1;
         do
-        {
+        {  //check for validity of input
          if (res>2400||res<32||res%8!=0)
          {
-        printf_tiny("Enter a valid input\n\r");
+        printf_tiny("\n\rEnter a valid input\n\r");
         res=size_cal();
          }
          else
@@ -179,7 +177,7 @@ void main()
         }while (res>2400||res<32||res%8!=0);
 
 
-
+        // check for validity of malloc initialization
         if((buffer[0]=malloc((unsigned int)(res)))==0)
         printf_tiny("malloc buffer0 failed\n\r");
 
@@ -200,18 +198,18 @@ void main()
     //printf_tiny ("Size is %d",pp[0]);
     //printf_tiny ("Size is %d",pp[1]);
 
-  while(1){
+  while(1){ // Ask user for inputs
     printf_tiny("\n\rEnter lowercase or number characters to add to buffer\n\r");
-    /*printf_tiny("\n\r + to add buffer\n\r");
+    printf_tiny("\n\r + to add buffer\n\r");
     printf_tiny("\n\r - to delete buffer\n\r");
     printf_tiny("\n\r ? for buffer report\n\r");
     printf_tiny("\n\r @ to free the heap\n\r");
-    printf_tiny("\n\r = for hex dump\n\r");*/
+    printf_tiny("\n\r = for hex dump\n\r");
     zz=getchar();
     putchar(zz);
-    if((zz>='0'&& zz<= '9')||(zz>='a'&& zz<= 'z'))
+    if((zz>='0'&& zz<= '9')||(zz>='a'&& zz<= 'z')) //check for storage characters
     {
-        if(w<res)
+        if(w<res)       // add elements to buffer 0
         {
         *(buffer[0]+w)=zz;
           w++;
@@ -227,9 +225,10 @@ void main()
     else
     {
       cmd_first ++;
-    switch(zz)
+    switch(zz)              // switch case for data entered by user
     {
-     case '+':
+     case '+':    // switch case for addition of buffer
+         DEBUGPORT(45)
         printf("\n");
 
      //cmd_cnt++;
@@ -238,7 +237,7 @@ void main()
 
      do
      {
-     if(pp[u]>400||pp[u]<20)
+     if(pp[u]>400||pp[u]<20)  // check for valid buffer size
       {
           printf_tiny("\rEnter a valid input\n\r");
           pp[u]= size_cal();
@@ -268,7 +267,7 @@ void main()
        k++;
        u++;
        break;
-     case '-':
+     case '-':          // check for deletion of buffer
          printf("\n");
         //cmd_cnt++;
         printf_tiny("\rEnter a buffer number to be freed\n\r");
@@ -298,7 +297,7 @@ void main()
          }
         } while ((ff==0)||(ff>k));
         break;
-     case '?':
+     case '?':    // condition for buffer detailed report
          printf("\n");
         //cmd_cnt++;
         stg_first=w;
@@ -327,7 +326,7 @@ void main()
         printf_tiny("Number of Storage Characters:%d\n\r",cmd_first);
         printf_tiny("Number of free spaces in the buffer:%d\n\r",res-w);
         printf_tiny("Number of Storage characters since last entry of ?:%d\n\r",stg_first-stg_last);
-        printf_tiny("Number of total characters since last entry of ?:%d\n\r",cmd_first-cmd_last);
+        printf_tiny("Number of total characters since last entry of ?:%d\n\r",cmd_first-cmd_last+(stg_first-stg_last));
         stg_last=w;
         cmd_last++;
         printf_tiny("Buffer0 contents are as follows and now it is being emptied\n\r");
@@ -346,7 +345,7 @@ void main()
             *(buffer[0]+y)='\0';
         }
         break;
-     case '=':
+     case '=':  //condition for printing contents of buffer0
          printf("\n\r");
          printf("%04x:",temp[g]);
         //cmd_cnt++;
@@ -358,11 +357,12 @@ void main()
           if((y+1)%16==0)
           {
             printf("\n\r");
-            printf("%04x:",temp[g]+16);
+            printf("%04x:",temp[g]+(y+1));
+
           }
         }
         break;
-     case '@':
+     case '@':   //condition for freeing the heap and deallocating the buffers
         printf("\n");
         printf_tiny("All buffers are being freed\n\r");
         for(y=0;y<k;y++)
